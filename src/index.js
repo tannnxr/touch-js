@@ -2,19 +2,30 @@
 
 import chalk from 'chalk';
 import Logger from './Logger.js';
-import { version } from '../package.json';
+import application from '../package.json' assert {type: "json"};
 
 const checkForUpdates = async () => {
-    const curVersion = version;
-    const latestVersion = await (await fetch('')).json();
+    const curVersion = application.version;
+    const latestVersion = await fetch('https://raw.githubusercontent.com/tannnxr/touch-js/master/version.txt').then(res => res.text());
 
+    const logger = new Logger(true, 'Update Checker');
+
+    if (curVersion !== latestVersion) {
+        logger.log(`There is an update available for touch-js. Current Version: ${curVersion} Latest Version: ${latestVersion}`, 'warn');
+    } else {
+        logger.log(`touch-js is up to date. Current Version: ${curVersion}`, 'success');
+    }
 }
 
 const main = async () => {
 
-    const logger = new Logger(true);
+    const name = application.name;
 
-    logger.log('TouchJS Started', 'info');
+    const logger = new Logger(true, name);
+
+    logger.log(`${name} Started`, 'info');
+
+    await checkForUpdates();
 
 }
 
